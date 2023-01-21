@@ -1,0 +1,4 @@
+#! /usr/bin/bash
+
+#playing video in terminal with a specified quality
+mpv --ytdl-format=bestvideo[height"<=$1"]+bestaudio --slang=en ytdl://ytsearch:"$2"

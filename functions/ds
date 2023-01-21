@@ -1,0 +1,28 @@
+#! /usr/bin/bash
+
+#status - no bugs
+
+#status - no bug
+
+
+#Moving to the Music Directory, where these commands will be executed to download file(s) in that directory
+cd /home/ankit/Music
+
+
+#Taking the inputs for URLs (if, needed), and other parameters
+echo "Which Song: "
+read song
+echo '_________________________________'
+ls -d *
+echo '_________________________________'
+echo "Which folder to download: "
+read folder
+echo
+
+#executing the yt-dlp script to download the file(s)
+yt-dlp -f ba -x --audio-format mp3 --output "$folder/%(title)s.%(ext)s" --windows-filenames ytsearch:"$song" --sponsorblock-remove default
+cd
+
+
+#returning to the original repository the user was in at the beginning
+echo "$SECONDS Seconds to complete this Process!"

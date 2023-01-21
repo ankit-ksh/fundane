@@ -1,0 +1,4 @@
+#! /usr/bin/bash
+
+#...trying to play video in terminal
+mpv --ytdl-format=bestvideo[height"<=360"]+bestaudio --slang="en, auto" ytdl://ytsearch:"$*"

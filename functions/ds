@@ -1,28 +1,194 @@
-#! /usr/bin/bash
-
-#status - no bugs
-
-#status - no bug
+#! /usr/bin/python3
 
 
-#Moving to the Music Directory, where these commands will be executed to download file(s) in that directory
-cd /home/ankit/Music
+
+#Creating a Class to contain all the attributes and methods for a general video download
+class General:
+    def  __init__(self, type, quality):
+        self.type = type
+        self.quality = quality
+    
+    #Choosing the folder of the choice to download the file into, and also changing the directory
+    def choose_folder(self):
+    #changing the directory first is necessary since the list of folders has to be displayed
+        try:
+                os.chdir(f"/mnt/Cave/Home/Music")   #changed the directory to Music in the Home directory, if exception arise, it will be handled below
+        except:
+                print("There's some problem. Couldn't find the directory at all. Welcome to rectify the code.")
+
+        #deciding which folder in the Music directory will the file be downloaded
+        #displaying the name of list of all folders to give user the choice
+        print('\n', '-' * 50, "Type name of any of the folders from the given list", '-' * 50, '\n', sep = '\n')
+        items = os.listdir('.')
+        for item in items:
+            if os.path.isdir(item):
+                print(item)
 
 
-#Taking the inputs for URLs (if, needed), and other parameters
-echo "Which Song: "
-read song
-echo '_________________________________'
-ls -d *
-echo '_________________________________'
-echo "Which folder to download: "
-read folder
-echo
+        folder = input('\nFolder: ')    #finally taking input from the user for the decided folder name
 
-#executing the yt-dlp script to download the file(s)
-yt-dlp -f ba -x --audio-format mp3 --output "$folder/%(title)s.%(ext)s" --windows-filenames ytsearch:"$song" --sponsorblock-remove default
-cd
+    #Changing the directory or first making that, based on different options
+        if folder != '':
+            try:
+                os.chdir(f"/mnt/Cave/Home/Music/{folder}")   #changed the directory to folder variable as the user said, if exception arise, it will be handled below
+            except FileNotFoundError:
+                os.mkdir(f"/mnt/Cave/Home/Music/{folder}")
+                os.chdir(f"/mnt/Cave/Home/Music/{folder}")   #changed the directory to folder variable as the user said, exception arose, solved
+            except:
+                print("There's some problem. Couldn't find the directory at all. Welcome to rectify the code.")
+        else:
+            os.chdir(f"/mnt/Cave/Home/Music")
+
+    #defining the function to extract the video title or other info from just a keyword search
+    def search(arg):
+        with YoutubeDL() as ydl:
+            try:
+                get(arg) 
+            except:
+                video = ydl.extract_info(f"ytsearch:{arg}", download=False)['entries'][0]
+            else:
+                video = ydl.extract_info(arg, download=False)
+
+        return [video['webpage_url'], video['title']]
 
 
-#returning to the original repository the user was in at the beginning
-echo "$SECONDS Seconds to complete this Process!"
+
+
+
+
+#Creating a class for the Minimalistic People to use the program
+class Minimalist(General):
+    def __init__(self, type, quality):
+        super().__init__(type, quality)
+
+
+
+#Creating a class for Detailed mode of download
+class Detailed(General):
+    def __init__(self, type, quality, format):
+        super().__init__(type, quality)
+        self.format = format
+        
+
+
+
+
+
+
+#taking the user input for the first song, or the only song
+first_song = input("which song: ")
+
+#aborting if the first song input is empty string
+if first_song == '':
+    exit("\nExiting........")
+list_of_songs = [first_song]
+
+
+#Now let's import all the modules to start the serious work
+import os
+from requests import get
+from yt_dlp import YoutubeDL
+
+
+
+
+
+
+
+
+
+#changing all the song names to their corresponding YouTube URLs with a for loop
+list_of_song_urls = []
+list_of_song_title_on_youtube = []
+for song in list_of_songs:
+    #finding the url and adding to the url list
+    song_url = search(song)[0]
+    list_of_song_urls.append(song_url)
+    #finding the YouTube Title and adding to the YouTube Title list
+    song_title = search(song)[1]
+    list_of_song_title_on_youtube.append(song_title)
+
+
+
+#finally printing the list of all the songs user has selected
+if len(list_of_songs) > 1:
+    print("\nOk, Here's the list of songs that's starting to download now\n")
+    #then running a for loop to display the list of songs
+    for n in range(len(list_of_song_title_on_youtube)):
+        print(f"{n+1}. {list_of_song_title_on_youtube[n]}")
+    print("\n")
+else:
+    print(f"\nDownloading the song: {list_of_song_title_on_youtube[0]}\n")
+
+
+
+
+
+#Defining the format of the file(s), I want to download or other customisations related to the process itself
+ydl_opts = {
+    'format': 'bestaudio',
+    # ℹ️ See help(yt_dlp.postprocessor) for a list of available Postprocessors and their arguments
+    'postprocessors': [{  # Extract audio using ffmpeg
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': 'mp3',
+    }]
+}
+
+
+
+#lets also track time
+import time
+st = time.time()
+
+
+#Finally with all things set downloading all the songs contained in the list_of_songs list as their YouTube URLs
+with YoutubeDL(ydl_opts) as ydl:
+    error_code = ydl.download(list_of_song_urls)
+
+
+
+
+
+
+#Final Info
+
+if folder == '':
+    folder = 'Music folder inside the Home directory'
+else:
+    folder = folder + ' folder inside the Music Folder inside the Home directory'
+
+
+#finally printing the list of all the songs user has selected
+if len(list_of_songs) > 1:
+    print(f"\nThese songs have been downloaded and are in the {folder} folder of the Home directory of your computer.\n")
+    #then running a for loop to display the list of songs
+    for n in range(len(list_of_song_title_on_youtube)):
+        print(f"{n+1}. {list_of_song_title_on_youtube[n]}")
+    print("\n")
+else:
+    print(f"\nDownloaded the song {list_of_song_title_on_youtube[0]} and it's in the {folder} of your computer.\n")
+
+
+
+elapsed_time = time.time() - st
+print('\nExecution time:', time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
+
+
+
+
+
+
+
+#the code below is deprecated (that's why commented)
+# #take input, in case the user wants to download any other song along with that
+# second_song = input("\nAny other song you want to download. If not press ENTER: ")
+# if second_song != '':
+#     list_of_songs.append(second_song)
+#     curr_input = second_song
+#     while curr_input != '':
+#         next_song = input("\nWhich other one [If No other song, press ENTER]: ")
+#         if next_song != '':
+#             list_of_songs.append(next_song)
+#         else:
+#             curr_input = next_song
+

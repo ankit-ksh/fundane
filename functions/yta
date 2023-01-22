@@ -1,0 +1,4 @@
+#! /usr/bin/bash
+
+#...play audio in terminal
+mpv --ytdl-format=bestaudio --slang=en ytdl://ytsearch:"$*"

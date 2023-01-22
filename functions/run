@@ -1,7 +1,0 @@
-#! /usr/bin/python3
-
-a = input("Hey, What's your name?")
-n = int(input('How many times you want to print you name: '))
-
-for x in range(n):
-	print('Hello', a)

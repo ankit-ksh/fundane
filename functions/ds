@@ -14,7 +14,6 @@ class Minimalist:
     def  __init__(self):
         self.quality = "bestaudio"
         self.song_list = input("Which songs (input as many as you like, separated with commas): ")
-        self.folder = self.choose_folder_and_move()
         self.ydl_opts = {
             #'format': 'bestaudio',
             'format' : self.quality,
@@ -105,18 +104,19 @@ class Minimalist:
 
     #I've defined each function. Now time to use them all to for the object created, to download the file, which should be callable from the object and the dot notation
     def download(self):
-        self.process_input()
-        self.ytdlp_download()
-        
-
-
+        if self.song_list != '':
+            self.process_input()
+            self.choose_folder_and_move()
+            self.ytdlp_download()
+        else:
+            print('\n', "Song name was   empty. So quitting...")
 
 
 
 
 
 song = Minimalist()
-song.complete_download()
+song.download()
 
 
 

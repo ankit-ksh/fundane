@@ -1,14 +1,6 @@
 #! /usr/bin/python3
 
 
-#Importing the modules at start. If possible distribute the importing to make the code execution faster at start
-import os
-from requests import get
-from yt_dlp import YoutubeDL
-
-
-
-
 #Creating a Class to contain all the attributes and methods for a general video download. Functions are in sequenctial order of their execution in a normal process of downloading
 class Minimalist:
     def  __init__(self):
@@ -23,9 +15,7 @@ class Minimalist:
                 'preferredcodec': 'mp3',
             }]
         }
-
-
-
+    
 
     #change a list of search terms to a list of corresponding urls on YouTube
     def name_to_url(self):
@@ -105,17 +95,20 @@ class Minimalist:
     #I've defined each function. Now time to use them all to for the object created, to download the file, which should be callable from the object and the dot notation
     def download(self):
         if self.song_list != '':
-            self.process_input()
             self.choose_folder_and_move()
+            self.process_input()
             self.ytdlp_download()
         else:
-            print('\n', "Song name was   empty. So quitting...")
+            print('\n', "Song name was empty. So quitting...")
 
 
 
 
-
+#Downloading the file using the Minimalist class, by first importing all the modules and then creating an object which signifies the user's preferences and choices
 song = Minimalist()
+import os
+from yt_dlp import YoutubeDL
+from requests import get
 song.download()
 
 

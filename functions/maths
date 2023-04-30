@@ -1,0 +1,4 @@
+#! /usr/bin/bash
+
+mpv /mnt/Cave/IITMOD/"Maths II" &
+disown

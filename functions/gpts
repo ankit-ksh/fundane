@@ -1,0 +1,20 @@
+import yt_dlp
+
+def download_youtube_video():
+    search_term = input("Enter a YouTube link or search term: ")
+    with yt_dlp.YoutubeDL({'outtmpl': '%(title)s.%(ext)s'}) as ydl:
+        results = ydl.extract_info(search_term, download=False)
+        videos = []
+        options = []
+        for i, video in enumerate(results['entries']):
+            videos.append(video)
+            print(f"{i+1}. {video['title']}")
+        option = input("Enter the number of the video you want to download: ")
+        selected_video = videos[int(option)-1]
+        formats = selected_video['formats']
+        for i, format in enumerate(formats):
+            options.append(f"{i+1}. {format['format_note']} ({format['ext']})")
+            print(options[i])
+        option = input("Enter the number of the format you want to download: ")
+        selected_format = formats[int(option)-1]
+        ydl.download([selected_format['url']])

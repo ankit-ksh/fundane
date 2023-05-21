@@ -1,0 +1,26 @@
+#!/bin/bash
+if [ $# -eq 0 ] 
+then
+	echo 'Usage: audiosplitter.sh filename|directory segmenttime'
+	exit
+fi
+
+FILENAME=$1
+SEGMENTTIME=$2
+
+if [ -d "${FILENAME}" ]; then
+  for file in `ls $FILENAME`;do
+		NAMEWITHNOEXTENSION=`echo "${file}" | rev | cut -d"." -f2-  | rev`
+		OUTPUTFILENAME=`echo $NAMEWITHNOEXTENSION | sed --expression='s/ /_/g'`
+		mkdir $OUTPUTFILENAME
+		ffmpeg -i "$FILENAME/$file" -f segment -segment_time $SEGMENTTIME -c copy $OUTPUTFILENAME/part%03d.mp3
+  done
+elif [[ -f $FILENAME ]]; then
+	NAMEWITHNOEXTENSION=`echo $FILENAME | rev | cut -d"." -f2-  | rev`
+	OUTPUTFILENAME=`echo $NAMEWITHNOEXTENSION | sed --expression='s/ /_/g'`
+	mkdir $OUTPUTFILENAME
+	ffmpeg -i "$FILENAME" -f segment -segment_time $SEGMENTTIME -c copy $OUTPUTFILENAME/part%03d.mp3
+else
+    echo "$PASSED is not valid"
+    exit 1
+fi

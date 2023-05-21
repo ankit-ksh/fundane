@@ -1,0 +1,18 @@
+#! /usr/bin/bash
+
+echo "Welcom to Video Playlist Downloader"
+
+#downloading video with yt-dlp : input quality
+    echo 'Link of Playlist: '
+    read url
+    echo 'Quality of video (Height): '
+    read quality
+    echo 'From this video: '
+    read from
+    echo 'To this video: '
+    read to
+	yt-dlp -f ba+bv[height=$quality] --progress --embed-subs --embed-chapters --output "%(title)s.%(ext)s" --windows-filenames $url --playlist-start $from --playlist-end $to
+
+#removed options
+#--sponsorblock-remove default
+# --merge-output-format mkv

@@ -1,0 +1,4 @@
+#! /usr/bin/bash
+
+#downloading video with yt-dlp : input quality
+	yt-dlp -f ba+bv[height="$1"] --progress --embed-subs --embed-chapters --output "%(title)s.%(ext)s" --windows-filenames ytsearch:"$2"

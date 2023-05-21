@@ -1,6 +1,7 @@
 #! /usr/bin/bash
 
 #downloading video with yt-dlp : input quality
-	cd /home/ankit/Videos
-	yt-dlp -f ba+bv[height="$1"] --progress --embed-subs --embed-chapters --merge-output-format mkv --output "%(title)s.%(ext)s" --windows-filenames ytsearch:"$2" --sponsorblock-remove default
-	cd
+	yt-dlp -f ba+bv[height="$1"] --progress --embed-subs --embed-chapters --merge-output-format mkv --output "%(title)s.%(ext)s" --windows-filenames ytsearch:"$2"
+
+#removed options
+#--sponsorblock-remove default

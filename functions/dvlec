@@ -1,0 +1,35 @@
+#! /usr/bin/bash
+
+echo "Note : You are using the script to download the Video lectures. Some preferences will be set even without you specifically opting for it"
+
+
+init_dir=$(pwd)
+cd /mnt/Cave/Home/Videos/Courses
+echo "You're now in the Courses Directory of /mnt/Cave/Home/Videos"
+
+#Taking the inputs for URLs (if, needed), and other parameters
+echo
+echo '____________________________'
+echo
+echo 'Enter the URL of the video: '
+read url
+echo
+echo '___________________________________________________________________________'
+echo
+echo 'The quality of video(Height of the video.. eg 360, 720 etc): '
+read quality
+
+
+
+#executing the yt-dlp script to download the file(s)
+yt-dlp -f ba+bv[height="$quality"] --progress --embed-subs --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(title)s.%(ext)s" --sponsorblock-remove default $url
+
+
+
+#returning to the original repository the user was in at the beginning
+cd $init_dir
+echo
+echo '____________________________'
+echo "Welcome back to the directory where you started"
+echo
+

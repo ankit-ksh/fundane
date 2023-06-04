@@ -1,0 +1,6 @@
+#! /usr/bin/bash
+
+
+firefox --kiosk https://seek.onlinedegree.iitm.ac.in/courses/ns_23t2_se2001?ann=4724316021194752&id=2&type=lesson&tab=courses &
+sleep 1 &&
+mpv /mnt/Cave/IITMOD/"System Commands"/Videos

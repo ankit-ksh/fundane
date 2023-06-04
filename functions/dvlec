@@ -1,6 +1,6 @@
 #! /usr/bin/bash
 
-echo "Note : You are using the script to download the Video lectures. Some preferences will be set even without you specifically opting for it"
+echo "Note : You are using the script to download the Video lectures. Some preferences will be set even without you specifically opting for it eg. video quality will be <=1080 by default"
 
 
 init_dir=$(pwd)
@@ -16,13 +16,21 @@ read url
 echo
 echo '___________________________________________________________________________'
 echo
-echo 'The quality of video(Height of the video.. eg 360, 720 etc): '
-read quality
+echo 'Download from this video of the Playlist: '
+read start
+echo 'To this video no.: '
+read end
 
 
 
-#executing the yt-dlp script to download the file(s)
-yt-dlp -f ba+bv[height="$quality"] --progress --embed-subs --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(title)s.%(ext)s" --sponsorblock-remove default $url
+#if you do not want to ask for quality each time and set it to less than or equal to 1080
+yt-dlp -f "ba+bv[height<=1080]" --progress --embed-subs --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default --playlist-start $start --playlist-end $end $url
+
+
+#executing the yt-dlp script to download the file(s) also asking the url
+#echo 'The quality of video(Height of the video.. eg 360, 720 etc): '
+#read quality
+#yt-dlp -f ba+bv[height="$quality"] --progress --embed-subs --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default --playlist-start $start --playlist-end $end $url
 
 
 

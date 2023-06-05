@@ -1,7 +1,0 @@
-#! /usr/bin/bash
-
-google-chrome
-screen top
-split
-focus down
-

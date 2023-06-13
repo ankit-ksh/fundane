@@ -1,0 +1,8 @@
+#! /usr/bin/bash
+
+firefox --kiosk https://app.onlinedegree.iitm.ac.in/student_dashboard/current_courses &
+#sleep 1 &&
+#mpv /mnt/Cave/IITMOD/"MAD I"/Videos
+
+
+

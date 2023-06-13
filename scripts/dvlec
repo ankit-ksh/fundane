@@ -5,7 +5,8 @@ echo "Note : You are using the script to download the Video lectures. Some prefe
 
 init_dir=$(pwd)
 cd /mnt/Cave/Home/Videos/Courses  #Change this directory to whichever directory you want to download your videos on your pc
-echo "You're now in the Courses Directory of /mnt/Cave/Home/Videos"
+echo "You are now here..."
+echo $(pwd)
 
 #Taking the inputs for URLs (if, needed), and other parameters
 echo

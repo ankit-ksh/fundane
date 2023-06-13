@@ -4,14 +4,14 @@ echo "Note : You are using the script to download the Video lectures. Some prefe
 
 
 init_dir=$(pwd)
-cd /mnt/Cave/Home/Videos/Courses
+cd /mnt/Cave/Home/Videos/Courses  #Change this directory to whichever directory you want to download your videos on your pc
 echo "You're now in the Courses Directory of /mnt/Cave/Home/Videos"
 
 #Taking the inputs for URLs (if, needed), and other parameters
 echo
 echo '____________________________'
 echo
-echo 'Enter the URL of the video: '
+echo 'Enter the URL of the video playlist: '
 read url
 echo
 echo '___________________________________________________________________________'

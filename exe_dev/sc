@@ -1,7 +1,7 @@
 #! /usr/bin/bash
 
 
-firefox --kiosk https://seek.onlinedegree.iitm.ac.in/courses/ns_23t2_se2001?ann=4724316021194752&id=2&type=lesson&tab=courses &
+firefox --new-window --kiosk https://seek.onlinedegree.iitm.ac.in/courses/ns_23t2_se2001?ann=4724316021194752&id=2&type=lesson&tab=courses &
 evince --fullscreen /mnt/Cave/Books/Linux/"William E. Shotts, Jr - The Linux Command Line_ A Complete Introduction-No Starch Press (2019).pdf" &
 sleep 1 &&
 mpv /mnt/Cave/IITMOD/"System Commands"/Videos

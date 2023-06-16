@@ -3,7 +3,7 @@
 #for opening the content of dbms course as well as the course portal
 
 
-firefox --kiosk https://seek.onlinedegree.iitm.ac.in/courses/ns_23t2_cs2001?ann=5898387945684992&id=2&type=lesson&tab=courses &
+firefox --new-window --kiosk https://seek.onlinedegree.iitm.ac.in/courses/ns_23t2_cs2001?ann=5898387945684992&id=2&type=lesson&tab=courses &
 sleep 1 &&
 mpv /mnt/Cave/IITMOD/DBMS/Videos
 disown

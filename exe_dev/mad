@@ -1,6 +1,6 @@
 #! /usr/bin/bash
 
-firefox --kiosk https://seek.onlinedegree.iitm.ac.in/courses/ns_23t2_cs2003?id=2&type=lesson&tab=courses&ann=6584079877144576 &
+firefox --new-window --kiosk https://seek.onlinedegree.iitm.ac.in/courses/ns_23t2_cs2003?id=2&type=lesson&tab=courses&ann=6584079877144576 &
 sleep 1 &&
 mpv /mnt/Cave/IITMOD/"MAD I"/Videos
 

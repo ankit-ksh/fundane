@@ -33,17 +33,6 @@ read start
 echo 'To this video no.: '
 read end
 
-#if video number start and end are not specified, set start to 1 and end to 1
-if [ -z $start ]; then
-	start=1
-fi
-if [ -z $end ]; then
-	end=$start
-	echo
-	echo "Only $start number video of the given playlist will be downloaded"
-	echo
-fi
-	
 	
 
 echo "The quality of video(eg. 360, 720 etc. If you press Enter, it will be set to $high_quality): "
@@ -58,9 +47,13 @@ fi
 
 
 
+if [ -z $start ] && [ -z $end ]; then
+	yt-dlp -f "ba+bv[height<="$quality"]" --progress --embed-subs --write-auto-sub --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default
+else
+	yt-dlp -f "ba+bv[height<="$quality"]" --progress --embed-subs --write-auto-sub --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default --playlist-start $start --playlist-end $end $url
 
 #Donwnloading the video with the set parameters
-yt-dlp -f "ba+bv[height<="$quality"]" --progress --embed-subs --write-auto-sub --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default --playlist-start $start --playlist-end $end $url
+#yt-dlp -f "ba+bv[height<="$quality"]" --progress --embed-subs --write-auto-sub --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default --playlist-start $start --playlist-end $end $url
 
 
 #executing the yt-dlp script to download the file(s) also asking the url

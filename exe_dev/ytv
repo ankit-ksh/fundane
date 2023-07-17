@@ -1,4 +1,24 @@
 #! /usr/bin/bash
 
 #...trying to play video in terminal
-mpv --ytdl-format=bestvideo[height"<=360"]+bestaudio --slang="en, auto" ytdl://ytsearch:"$*"
+
+#Setting default quality to 480p
+default_quality=480
+
+
+
+
+#Input quality from the user
+echo 
+echo "Quality: "
+read quality
+
+if [ -z $quality ]; then
+        quality=$default_quality
+        echo "Since you pressed Enter, video quality will be less than or equal to $default_quality"
+fi
+
+
+
+
+mpv --ytdl-format=bestvideo[height"<=$quality"]+bestaudio --slang="en, auto" ytdl://ytsearch:"$*" --osc=yes

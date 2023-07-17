@@ -1,0 +1,5 @@
+#! /usr/bin/bash
+
+
+google-chrome-stable --new-window --profile-directory="Profile 1" --start-fullscreen https://mail.google.com & 
+google-chrome-stable --new-window --profile-directory="Default" --start-fullscreen https://mail.google.com

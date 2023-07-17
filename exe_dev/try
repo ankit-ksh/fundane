@@ -1,7 +1,8 @@
 #! /usr/bin/bash
 
-google-chrome
-screen top
-split
-focus down
+read quality
+if [ -z "$quality"]; then
+	quality=1080;
+fi
 
+echo $quality

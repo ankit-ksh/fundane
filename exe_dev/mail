@@ -1,4 +1,0 @@
-#! /usr/bin/bash
-
-firefox --new-window --kiosk mail.google.com &
-google-chrome-stable --start-fullscreen mail.google.com

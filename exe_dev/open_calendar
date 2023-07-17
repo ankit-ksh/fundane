@@ -1,3 +1,4 @@
 #! /usr/bin/bash
 
-firefox --kiosk https://calendar.google.com/calendar/u/0/r
+google-chrome-stable --new-window --profile-directory="Profile 1" --start-fullscreen https://calendar.google.com/calendar/u/0/r
+

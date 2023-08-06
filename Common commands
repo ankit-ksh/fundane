@@ -3,3 +3,7 @@ convert -density 300 -quality 100 in.pdf out.jpg
 
 #to convert all jpeg files in a folder to pdf with imagemagick
 convert -quality 100 *.jpg out.pdf
+
+
+convert -quality 30 -density 60 -background white -page a4 *.jpg *.jpeg form.pdf
+

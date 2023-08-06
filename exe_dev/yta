@@ -1,4 +1,8 @@
 #! /usr/bin/bash
 
+
+echo "Enter Audio Title: "
+read audio_title
+
 #...play audio in terminal
-mpv --ytdl-format=bestaudio --slang=en ytdl://ytsearch:"$*"
+mpv --ytdl-format=bestaudio --slang=en ytdl://ytsearch:"$audio_title"

@@ -33,7 +33,14 @@ read start
 echo 'To this video no.: '
 read end
 
-	
+if [ -z "$start" ] && [ -n "$end" ]; then
+	echo setting start equal 1 since start was empty
+	start=1
+fi
+if [ -z "$end" ] && [ -n "$start" ]; then
+	echo setting end equal 100 since end was empty
+	end=100
+fi
 
 echo "The quality of video(eg. 360, 720 etc. If you press Enter, it will be set to $high_quality): "
 read quality
@@ -47,13 +54,17 @@ fi
 
 
 
-if [ -z $start ] && [ -z $end ]; then
-	yt-dlp -f "ba+bv[height<="$quality"]" --progress --embed-subs --write-auto-sub --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default
+if [ -z "$start" ] && [ -z "$end" ]; then
+	echo no playlist mode
+	yt-dlp -f "ba+bv[height<="$quality"]" --no-playlist --progress --embed-subs --write-auto-sub --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default $url
 else
-	yt-dlp -f "ba+bv[height<="$quality"]" --progress --embed-subs --write-auto-sub --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default --playlist-start $start --playlist-end $end $url
+	echo yes playlist mode
+	yt-dlp -f "ba+bv[height<="$quality"]" --yes-playlist --progress --embed-subs --write-auto-sub --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default --playlist-start $start --playlist-end $end $url
+fi
+
 
 #Donwnloading the video with the set parameters
-#yt-dlp -f "ba+bv[height<="$quality"]" --progress --embed-subs --write-auto-sub --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default --playlist-start $start --playlist-end $end $url
+#yt-dlp -f "ba+bv[height<="$quality"]" --yes-playlist --progress --embed-subs --write-auto-sub --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default --playlist-start $start --playlist-end $end $url
 
 
 #executing the yt-dlp script to download the file(s) also asking the url

@@ -1,19 +1,41 @@
 #! /usr/bin/bash
 
-echo "Note : You are using the script to download the Video lectures. Some preferences will be set even without you specifically opting for it eg. video quality will be <=1080 by default"
 
+#initializing some variables
+high_quality=720
+course_dir='/home/ankit/Videos/Courses'
+
+echo ----------------------------------------------------------------------- 
+echo "Note : You are using the script to download the Video lectures.
+      Though you'll be prompted to enter video quality, if you don't
+      enter anything it will be set to $high_quality. Even if you provide
+      the link of a video from a playlist whole playlist can be downloaded"
+echo ----------------------------------------------------------------------- 
 
 init_dir=$(pwd)
-cd /mnt/Cave/Home/Videos/Courses  #Change this directory to whichever directory you want to download your videos on your pc
-echo "You are now here..."
-echo $(pwd)
+
+
+if [ -d "$course_dir" ]; then
+	cd $course_dir
+else 
+	mkdir $course_dir
+	cd $course_dir
+fi
+
+echo
+echo --------------------------------------------------------------------
+echo "You're now in the Directory $(pwd)"
+echo --------------------------------------------------------------------
+echo
 
 #Taking the inputs for URLs (if, needed), and other parameters
 echo
 echo '____________________________'
+url=$(xclip -selection clipboard -o)
+echo "The link is taken from the clipboard and that is $url"
 echo
-echo 'Enter the URL of the video playlist: '
-read url
+
+
 echo
 echo '___________________________________________________________________________'
 echo
@@ -22,10 +44,38 @@ read start
 echo 'To this video no.: '
 read end
 
+if [ -z "$start" ] && [ -n "$end" ]; then
+	echo setting start equal 1 since start was empty
+	start=1
+fi
+if [ -z "$end" ] && [ -n "$start" ]; then
+	echo setting end equal 100 since end was empty
+	end=100
+fi
+
+echo "The quality of video(eg. 360, 720 etc. If you press Enter, it will be set to $high_quality): "
+read quality
+
+if [ -z $quality ]; then
+	quality=$high_quality
+	echo "Since you pressed Enter, downloaded quality will be less than or equal to $high_quality"
+fi
 
 
-#if you do not want to ask for quality each time and set it to less than or equal to 1080
-yt-dlp -f "ba+bv[height<=1080]" --progress --embed-subs --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default --playlist-start $start --playlist-end $end $url
+
+
+
+if [ -z "$start" ] && [ -z "$end" ]; then
+	echo no playlist mode
+	yt-dlp -f "ba+bv[height<="$quality"]" --no-playlist --progress --embed-subs --write-auto-sub --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default $url
+else
+	echo yes playlist mode
+	yt-dlp -f "ba+bv[height<="$quality"]" --yes-playlist --progress --embed-subs --write-auto-sub --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default --playlist-start $start --playlist-end $end $url
+fi
+
+
+#Donwnloading the video with the set parameters
+#yt-dlp -f "ba+bv[height<="$quality"]" --yes-playlist --progress --embed-subs --write-auto-sub --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" --sponsorblock-remove default --playlist-start $start --playlist-end $end $url
 
 
 #executing the yt-dlp script to download the file(s) also asking the url

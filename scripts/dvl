@@ -19,7 +19,7 @@ read quality
 
 
 #executing the yt-dlp script to download the file(s)
-yt-dlp -f ba+bv[height="$quality"] --progress --embed-subs --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(title)s.%(ext)s" --sponsorblock-remove default $url
+yt-dlp --cookies /home/ankit/Desktop/Nest/git-repos/fundane/scripts/cookie.txt -f ba+bv[height="$quality"] --progress --embed-subs --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(title)s.%(ext)s" --sponsorblock-remove default $url
 
 
 

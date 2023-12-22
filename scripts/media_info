@@ -1,0 +1,44 @@
+#! /usr/bin/bash
+
+
+#If f is provided as the first argument then perform the calculation for the subfolders, otherwise in the current folder
+if [ -z "$1" ];
+then
+	duration_in_seconds=`for f in ./*
+	do ffprobe -v quiet -of csv=p=0 -show_entries format=duration "$f"
+	done | awk '{sum += $1}; END{print sum}'`
+elif [ "$1" == "f" ];
+then
+	duration_in_seconds=$(for f in ./*/*
+	do ffprobe -v quiet -of csv=p=0 -show_entries format=duration "$f"
+	done | awk '{sum += $1}; END{print sum}')
+fi
+
+
+#calculating the hours and rounding the floating point value variable
+hours=$(echo "scale=1; $duration_in_seconds/3600" | bc -l)
+hours_rounded=$(echo "scale=0; $duration_in_seconds/3600" | bc -l)
+#hours_rounded=`printf "%.1f\n" $hours`
+
+#calculating the minutes and also rounding that
+minutes=$(echo "scale=0; $duration_in_seconds/60" | bc -l)
+minutes_rounded=$(printf "%.0f\n" $minutes)
+minutes_after_hours=$(echo "scale=0; $minutes%60" | bc -l)
+
+
+#calculating how many days if study for 1, 1.5 and 2 hours
+days1=$(printf "%.0f\n" $hours)
+days1_rndd=$(printf "%.0f\n" $days1)
+days1_5=$(echo "$hours/1.5" | bc -l)
+days1_5_rndd=`printf "%.0f\n" $days1_5`
+days2=`echo "$hours/2" | bc -l`
+days2_rndd=`printf "%.0f\n" $days2`
+
+#finally save the hours and minutes info in a file named media_info and also output to the terminal
+echo -e "Total duration of Media: $hours hours
+"Equal to" $hours_rounded hours and $minutes_after_hours minutes.
+\n
+It will take:
+$days1_rndd days, with 1 hour daily
+$days1_5_rndd days, with 1.5 hour daily
+$days2_rndd days, with 2 hours daily" | tee media_info

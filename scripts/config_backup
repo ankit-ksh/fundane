@@ -1,0 +1,22 @@
+#! /usr/bin/bash
+
+
+folder="backup_files"
+
+
+if [ -d  "backup_files" ]; then
+	true	
+else
+	mkdir $folder 
+fi
+
+cp ~/.bashrc $folder ;
+cp ~/.config/mpv/mpv.conf $folder ;
+cp /etc/tlp.conf $folder ;
+cp /etc/default/grub $folder ;
+
+
+#no need to add backup aliases with alias command because that is already included in the .bashrac file. alias command doesn't work in a non interactive shell like a shell shell script, that's why my shell script was not working.
+#alias
+#>"$folder"/alias
+ 

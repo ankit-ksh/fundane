@@ -1,4 +1,0 @@
-#! /usr/bin/bash
-
-mpv /mnt/Cave/IITMOD/"English 2"
-disown

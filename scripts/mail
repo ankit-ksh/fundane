@@ -1,4 +1,0 @@
-#! /usr/bin/bash
-
-firefox --kiosk mail.google.com &
-google-chrome-stable --kiosk mail.google.com

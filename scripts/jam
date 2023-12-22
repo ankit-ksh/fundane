@@ -1,5 +1,0 @@
-#! /usr/bin/bash
-
-firefox --kiosk https://seek.nptel.ac.in/courses/ns_gate_cy?id=837&type=lesson&tab=courses &
-sleep 1 &&
-nautilus /mnt/Cave/IITJ/Chemistry

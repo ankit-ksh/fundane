@@ -1,6 +1,12 @@
 #! /usr/bin/python3
 
 
+#initializing some variables
+#Download directory
+dwnld_dir = "/home/ankit/Music"
+
+
+
 #Creating a Class to contain all the attributes and methods for a general video download. Functions are in sequenctial order of their execution in a normal process of downloading
 class Minimalist:
     def  __init__(self):
@@ -58,7 +64,7 @@ class Minimalist:
     def choose_folder_and_move(self):
         #changing the directory first is necessary since the list of folders has to be displayed
         try:
-                os.chdir(f"/mnt/Cave/Home/Music")   #changed the directory to Music in the Home directory, if exception arise, it will be handled below
+                os.chdir(f"{dwnld_dir}")   #changed the directory to Music in the Home directory, if exception arise, it will be handled below
         except:
                 print("There's some problem. Couldn't find the directory at all. Welcome to rectify the code.")
 
@@ -75,16 +81,16 @@ class Minimalist:
         #Changing the directory or first making that, based on different options
         if folder != '':
             try:
-                os.chdir(f"/mnt/Cave/Home/Music/{folder}")   #changed the directory to folder variable as the user said, if exception arise, it will be handled below
+                os.chdir(f"{dwnld_dir}/{folder}")   #changed the directory to folder variable as the user said, if exception arise, it will be handled below
             except FileNotFoundError:
-                os.mkdir(f"/mnt/Cave/Home/Music/{folder}")
-                os.chdir(f"/mnt/Cave/Home/Music/{folder}")   #changed the directory to folder variable as the user said, exception arose, solved
+                os.mkdir(f"{dwnld_dir}/{folder}")
+                os.chdir(f"{dwnld_dir}/{folder}")   #changed the directory to folder variable as the user said, exception arose, solved
             except:
                 print("There's some problem. Couldn't find the directory at all. Welcome to rectify the code.")
         else:
-            os.chdir(f"/mnt/Cave/Home/Music")
+            os.chdir(f"{dwnld_dir}")
         
-        return f"/mnt/Cave/Home/Music/{folder}"
+        return f"{dwnld_dir}/{folder}"
 
     
     #Finally with all things set, downloading all the songs contained in the list_of_songs list as their YouTube URLs, in the folder chosen
@@ -165,8 +171,8 @@ song.download()
 
 
 #lets also track time
-import time
-st = time.time()
+#import time
+#st = time.time()
 
 
 

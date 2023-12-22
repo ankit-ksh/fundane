@@ -1,13 +1,19 @@
 #! /usr/bin/bash
 
+
+#initializing some variables
 high_quality=720
+course_dir='/home/ankit/Videos/Courses'
 
-echo "Note : You are using the script to download the Video lectures. Though you'll be prompted to enter video quality, if you don't enter anything it will be set to $high_quality. Even if you provide the link of a video from a playlist whole playlist can be downloaded"
-
+echo ----------------------------------------------------------------------- 
+echo "Note : You are using the script to download the Video lectures.
+      Though you'll be prompted to enter video quality, if you don't
+      enter anything it will be set to $high_quality. Even if you provide
+      the link of a video from a playlist whole playlist can be downloaded"
+echo ----------------------------------------------------------------------- 
 
 init_dir=$(pwd)
 
-course_dir='/mnt/Cave/Home/Videos/Courses'
 
 if [ -d "$course_dir" ]; then
 	cd $course_dir
@@ -15,7 +21,12 @@ else
 	mkdir $course_dir
 	cd $course_dir
 fi
+
+echo
+echo --------------------------------------------------------------------
 echo "You're now in the Directory $(pwd)"
+echo --------------------------------------------------------------------
+echo
 
 #Taking the inputs for URLs (if, needed), and other parameters
 echo

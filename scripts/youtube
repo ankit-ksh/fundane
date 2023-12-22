@@ -1,3 +1,0 @@
-#! /usr/bin/bash
-
-google-chrome-stable --new-window --profile-directory="Default" --start-fullscreen https://www.youtube.com/

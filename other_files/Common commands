@@ -7,3 +7,6 @@ convert -quality 100 *.jpg out.pdf
 
 convert -quality 30 -density 60 -background white -page a4 *.jpg *.jpeg form.pdf
 
+# to keep white background
+convert -density 300 -quality 70 JHEWS_2023_08771.pdf -alpha remove JHEWS_2023_08771.jpeg
+

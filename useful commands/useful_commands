@@ -1,2 +1,0 @@
-#fitting the pages to the a4 size and converting all jpg files in a folder to pdf with specified quality of the output
-convert *.jpg -page a4 -quality 50 signed.pdf

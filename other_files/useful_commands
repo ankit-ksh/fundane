@@ -1,0 +1,10 @@
+#fitting the pages to the a4 size and converting all jpg files in a folder to pdf with specified quality of the output
+convert *.jpg -page a4 -quality 50 signed.pdf
+convert *.jpeg *.jpg -page a4 -density 300 -compress JPEG -quality 7 signed.pdf
+
+#convert single file pdf into jpg image
+convert -density 300 -quality 30 input.pdf -alpha remove output.jpg
+
+#Reduce the size of a pdf without losing quality (Perfectly works)
+gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook \
+-dNOPAUSE -dQUIET -dBATCH -sOutputFile=output.pdf input.pdf

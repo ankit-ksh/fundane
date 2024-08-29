@@ -1,8 +1,12 @@
 ## My own entries, related to non inclusion of actual code
 
-personal_novcs/
+personal_scripts_novcs/
 
 
+
+## Because of Vitepress
+docs/.vitepress/dist
+docs/.vitepress/cache
 
 
 ## Ignore Visual Studio temporary files, build results, and

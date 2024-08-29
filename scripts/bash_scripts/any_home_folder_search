@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+# -----------------------------------------------------------------------------
+# Info:
+#   author:    Miroslav Vidovic
+#   file:      files-search.sh
+#   created:   13.08.2017.-08:06:54
+#   revision:  ---
+#   version:   1.0
+# -----------------------------------------------------------------------------
+# Requirements:
+#   rofi
+# Description:
+#   Use rofi to search my files.
+# Usage:
+#   files-search.sh
+# -----------------------------------------------------------------------------
+# Script:
+
+# Files directory
+FILES_DIR=~/$1
+#mkdir -p ~/Files
+
+# Save find result to F_ARRAY
+# readarray -t F_ARRAY <<< "$(find "$FILES_DIR" -type f -name '*.pdf')"
+readarray -t F_ARRAY <<< "$(ls $FILES_DIR)"
+
+# Associative array for storing files
+# key => file name
+# value => absolute path to the file
+# FILES['filename']='path'
+declare -A FILES
+
+# Add elements to FILES array
+get_files() {
+
+  # if [ ${#F_ARRAY[@]} != 0 ]; then
+  if [[ ! -z ${F_ARRAY[@]} ]]; then
+    for i in "${!F_ARRAY[@]}"
+    do
+      path=${F_ARRAY[$i]}
+      file=$(basename "${F_ARRAY[$i]}")
+      FILES+=(["$file"]="$path")
+    done
+  else
+      echo "$FILES_DIR is empty!"
+      # echo "Please put some files in it."
+      # echo "Only .pdf files are accepted."
+      exit
+  fi
+
+  
+}
+
+# List for rofi
+gen_list(){
+  for i in "${!FILES[@]}"
+  do
+    echo "$i"
+  done
+}
+
+main() {
+  get_files
+  file=$( (gen_list) | rofi -dmenu -i -matching regex -no-custom -location 0 -p "File > " )
+
+  if [ -n "$file" ]; then
+    xdg-open "${FILES[$file]}"
+  fi
+}
+
+main
+
+exit 0

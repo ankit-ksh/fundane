@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+
+# -----------------------------------------------------------------------------
+# Info:
+#   author:    Miroslav Vidovic
+#   file:      music-search.sh
+#   created:   13.08.2017.-08:06:54
+#   revision:  ---
+#   version:   1.0
+# -----------------------------------------------------------------------------
+# Requirements:
+#   rofi
+# Description:
+#   Use rofi to search my music.
+# Usage:
+#   music-search.sh
+# -----------------------------------------------------------------------------
+# Script:
+
+# Books directory
+MUSIC_DIR=~/Music
+#mkdir -p ~/Books
+
+# Save find result to F_ARRAY
+readarray -t F_ARRAY <<< "$(find "$MUSIC_DIR" -type f -name '*.mp3')"
+
+# Associative array for storing music
+# key => track name
+# value => absolute path to the file
+# MUSIC['filename']='path'
+declare -A MUSIC
+
+# Add elements to MUSIC array
+get_music() {
+
+  # if [ ${#F_ARRAY[@]} != 0 ]; then
+  if [[ ! -z ${F_ARRAY[@]} ]]; then
+    for i in "${!F_ARRAY[@]}"
+    do
+      path=${F_ARRAY[$i]}
+      file=$(basename "${F_ARRAY[$i]}")
+      MUSIC+=(["$file"]="$path")
+    done
+  else
+      echo "$MUSIC_DIR is empty!"
+      echo "Please put some music in it."
+      echo "Only .pdf files are accepted."
+      exit
+  fi
+
+  
+}
+
+# List for rofi
+gen_list(){
+  for i in "${!MUSIC[@]}"
+  do
+    echo "$i"
+  done
+}
+
+main() {
+  get_music
+  track=$( (gen_list) | rofi -dmenu -i -matching regex -no-custom -location 0 -p "Book > " )
+
+  if [ -n "$track" ]; then
+    xdg-open "${MUSIC[$track]}"
+  fi
+}
+
+main
+
+exit 0

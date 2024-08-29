@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# this script was needed because the volume in i3, when used with without a condition check of whether the volume is at 100, was increasing it continuously without any limits.
+
+# Set your preferred volume increment and limit
+INCREMENT=2
+VOLUME_LIMIT=100
+
+# Get the current volume
+current_volume=$(pactl list sinks | grep 'Volume: front-left' | awk '{print $5}' | cut -d '%' -f1)
+
+# Calculate the new volume
+new_volume=$((current_volume + INCREMENT))
+
+# Check if the new volume exceeds the limit
+if [ "$new_volume" -le "$VOLUME_LIMIT" ]; then
+    # Set the new volume using pactl
+    pactl set-sink-volume @DEFAULT_SINK@ +"$INCREMENT"%
+else
+    # Set the volume to the limit if it would exceed
+    pactl set-sink-volume @DEFAULT_SINK@ "$VOLUME_LIMIT"%
+fi
+

@@ -3,5 +3,8 @@
     "docs:dev": "npx vitepress dev docs",
     "docs:build": "npx vitepress build docs",
     "docs:preview": "npx vitepress preview docs --port 8080"
+  },
+  "devDependencies": {
+    "vitepress": "^1.3.4"
   }
 }

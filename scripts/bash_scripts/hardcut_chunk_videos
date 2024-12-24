@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# Description:
+# This script processes video files in the current directory by:
+# 1. Checking for valid video files with compatible codecs.
+# 2. Merging all the valid video files into one single video file.
+# 3. Splitting the merged video into smaller chunks based on the specified duration (in minutes).
+# 4. Saving the chunks in the 'processed' directory with the same file extension as the original videos.
+# 5. Cleaning up the intermediate files after the process is completed.
+# Requirements:
+# - ffmpeg and ffprobe should be installed for video processing.
+# - The videos must be in a format that is supported by ffmpeg for direct copying.
+# Usage:
+# 1. Run the script in the directory containing the video files.
+# 2. Enter the desired chunk duration in minutes when prompted.
+# 3. The merged and chunked videos will be saved in the 'processed' directory.
+
+# Check if ffmpeg is installed
+if ! command -v ffmpeg &> /dev/null; then
+  echo "Error: ffmpeg is not installed. Please install it and try again."
+  exit 1
+fi
+
+# Initialize variables
+MERGE_LIST="merge_list.txt"
+MERGED_FILE_EXTENSION=""
+
+# Step 1: Check for valid video files
+echo "Checking for valid video files..."
+> "$MERGE_LIST"
+for file in *; do
+  if [ -f "$file" ] && ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "$file" &>/dev/null; then
+    # Detect the file extension of the first video file
+    if [ -z "$MERGED_FILE_EXTENSION" ]; then
+      MERGED_FILE_EXTENSION="${file##*.}"
+    fi
+    echo "Processing file: $file"
+    echo "file '$PWD/$file'" >> "$MERGE_LIST"
+  fi
+done
+
+if [ -z "$MERGED_FILE_EXTENSION" ]; then
+  echo "Error: No valid video files found. Exiting."
+  exit 1
+fi
+
+# Prompt for input
+read -p "Enter the chunk duration in minutes: " CHUNK_MINUTES
+
+# Convert chunk duration to seconds
+CHUNK_SECONDS=$((CHUNK_MINUTES * 60))
+
+# Initialize the output directory
+OUTPUT_DIR="processed"
+mkdir -p "$OUTPUT_DIR"
+
+# Step 2: Merge all video files into one (without converting formats)
+echo "Merging videos into one..."
+ffmpeg -f concat -safe 0 -i "$MERGE_LIST" -fflags +genpts -avoid_negative_ts make_zero -c copy "$OUTPUT_DIR/merged_video.$MERGED_FILE_EXTENSION" -y
+if [ $? -ne 0 ]; then
+  echo "Error: Failed to merge videos. Exiting."
+  exit 1
+fi
+
+echo "Merged video saved as $OUTPUT_DIR/merged_video.$MERGED_FILE_EXTENSION"
+
+# Step 3: Get merged video duration
+MERGED_FILE="$OUTPUT_DIR/merged_video.$MERGED_FILE_EXTENSION"
+MERGED_DURATION=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$MERGED_FILE" 2>/dev/null)
+if [ -z "$MERGED_DURATION" ]; then
+  echo "Error: Could not determine duration of merged video. Exiting."
+  exit 1
+fi
+
+# Step 4: Split merged video into chunks
+echo "Splitting merged video into $CHUNK_MINUTES-minute chunks..."
+
+# Use ffmpeg to get the accurate duration without skipping any frames
+DURATION=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$MERGED_FILE")
+DURATION=$(echo $DURATION | awk '{print int($1)}')  # Round down to integer seconds
+
+CHUNK_INDEX=1
+for (( START_TIME=0; START_TIME<DURATION; START_TIME+=CHUNK_SECONDS )); do
+  CHUNK_FILE="$OUTPUT_DIR/lecture_${CHUNK_INDEX}.$MERGED_FILE_EXTENSION"
+  ffmpeg -i "$MERGED_FILE" -ss "$START_TIME" -t "$CHUNK_SECONDS" -fflags +genpts -c copy "$CHUNK_FILE" -y
+  echo "Created chunk: $CHUNK_FILE"
+  CHUNK_INDEX=$((CHUNK_INDEX + 1))
+done
+
+# Step 5: Clean up
+rm -f "$MERGED_FILE"
+rm -f "$MERGE_LIST"
+
+echo "Processing completed. Check the '$OUTPUT_DIR' directory."
+

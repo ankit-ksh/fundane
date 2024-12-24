@@ -1,0 +1,64 @@
+#!/usr/bin/bash
+
+# Description:
+# This script is designed to back up common Linux configuration files (e.g., shell, mpv, i3, TLP, GRUB) on Ubuntu or Ubuntu-based systems.
+# It creates a backup folder, copies configuration files, and lists the user-installed software.
+# The script is general and can be scheduled for automatic backups via cron jobs or systemd timers.
+
+# Usage:
+# 1. Save the script to a file (e.g., backup_configs.sh).
+# 2. Make it executable: chmod +x backup_configs.sh
+# 3. Run the script: ./backup_configs.sh
+# 4. Schedule automatic backups with cron jobs or systemd timers.
+
+# Schedule with cron (example to run at 3 AM daily):
+# crontab -e
+# 0 3 * * * /path/to/backup_configs.sh
+
+# Schedule with systemd timers (example can be added to your system's systemd timer unit files)
+
+# Define the backup folder
+folder="$HOME/linux_backup_files"
+
+# Create the backup folder if it doesn't exist
+if [ ! -d "$folder" ]; then
+  mkdir -p "$folder"
+  echo "Created backup folder at $folder"
+fi
+
+# Backup common configuration files
+cp ~/.bashrc "$folder/"
+cp ~/.config/mpv/mpv.conf "$folder/"
+cp /etc/tlp.conf "$folder/"
+cp /etc/default/grub "$folder/"
+
+# Backup the entire MPV configuration folder
+if [ -d ~/.config/mpv ]; then
+  cp -r ~/.config/mpv/ "$folder/mpv/"
+  echo "MPV configuration folder backed up."
+else
+  echo "MPV configuration folder not found. Skipping MPV backup."
+fi
+
+# Backup i3 Configuration Folder
+if [ -d ~/.config/i3 ]; then
+  cp -r ~/.config/i3/ "$folder/i3/"
+  echo "i3 configuration folder backed up."
+else
+  echo "i3 configuration directory not found. Skipping i3 backup."
+fi
+
+# Backup legacy i3 config folder (~/.i3)
+if [ -d ~/.i3 ]; then
+  cp -r ~/.i3/ "$folder/i3_legacy/"
+  echo "Legacy i3 configuration folder backed up."
+else
+  echo "Legacy i3 configuration directory (~/.i3) not found. Skipping legacy i3 backup."
+fi
+
+# List installed software using dpkg (Ubuntu-based systems)
+dpkg --get-selections | grep -v deinstall > "$folder/installed_software.txt"
+echo "List of installed software saved to $folder/installed_software.txt"
+
+echo "Backup completed successfully. All files are saved in $folder."
+

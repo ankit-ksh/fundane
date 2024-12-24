@@ -1,0 +1,215 @@
+#!/bin/bash
+
+# Description:
+# This script processes video files in the current directory, merging them into chunks based on a specified duration.
+# Videos are grouped into chunks such that the total duration of each chunk is greater than or equal to a user-defined minimum duration.
+# The script:
+# 1. Scans the directory for video files with common video extensions (.mp4, .mkv, .avi, etc.).
+# 2. Tracks the cumulative duration of the videos.
+# 3. Merges videos into chunks whenever the cumulative duration exceeds the specified minimum.
+# 4. Saves the merged chunks in a folder called "processed" with the same extension as the first input video.
+# 5. Removes any original files that were merged if the user passes the -d flag.
+# 6. If -i flag is passed, creates a Markdown file (`files_info.md`) with information about which videos are in which lecture.
+
+# Function to convert seconds to minutes
+time_to_minutes() {
+    echo $(( $1 / 60 ))
+}
+
+# Find all valid video files with common extensions and sort them alphabetically
+video_files=$(find . -maxdepth 1 -type f \( -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.flv" -o -iname "*.wmv" -o -iname "*.webm" \) | sort)
+
+# Check if video files were found
+if [ -z "$video_files" ]; then
+    echo "No valid video files found in the directory. Exiting..."
+    exit 1
+fi
+
+# Convert to an array
+readarray -t video_files <<<"$video_files"
+
+# Check for flags
+while getopts ":ic:d" opt; do
+  case $opt in
+    i)
+      create_info=true
+      ;;
+    c)
+      min_duration=$OPTARG
+      ;;
+    d)
+      delete_files=true
+      ;;
+    \?)
+      echo "Usage: $0 [-i] [-c <chunk_duration_in_minutes>] [-d]"
+      exit 1
+      ;;
+  esac
+done
+
+# Validate chunk duration input
+if [ -z "$min_duration" ]; then
+  echo "Error: Chunk duration must be specified using the -c flag."
+  exit 1
+fi
+
+# Overwrite the processed folder by removing it and recreating it
+processed_folder="processed"
+rm -rf "$processed_folder"
+mkdir -p "$processed_folder"
+
+# Initialize variables
+current_duration=0
+chunk=1
+merge_list="merge_list.txt"
+merged_video_files=()
+info_file="$processed_folder/files_info.md"
+
+# If the -i flag is passed, initialize the info file
+if [ "$create_info" = true ]; then
+  echo "# Video Lecture Information" > "$info_file"
+  echo "" > "$info_file"
+fi
+
+# Ensure merge_list.txt starts fresh
+rm -f "$merge_list"
+
+# Process each video file
+for video in "${video_files[@]}"; do
+    # Get video duration in seconds using ffprobe
+    duration=$(ffprobe -i "$video" -show_entries format=duration -v quiet -of csv="p=0" | cut -d. -f1)
+
+    # Convert duration to minutes
+    duration_minutes=$(time_to_minutes "$duration")
+
+    # Add the video to the merge list
+    echo "file '$video'" >> "$merge_list"
+    current_duration=$((current_duration + duration_minutes))
+
+    # Store the videos that have been added to the merge list
+    merged_video_files+=("$video")
+
+    # Check if the total duration exceeds the specified limit
+    if (( current_duration >= min_duration )); then
+        # Set output file name with the same extension as the first file
+        output_extension="${video_files[0]##*.}"
+        output_file="$processed_folder/lecture_$chunk.$output_extension"
+
+        # Merge videos listed in merge_list.txt and suppress output
+        echo "Merging chunk $chunk into $output_file..."
+        ffmpeg -f concat -safe 0 -i "$merge_list" -c copy "$output_file" > /dev/null 2>&1
+
+        # If -i flag is passed, write information about the merged files to the info file
+        if [ "$create_info" = true ]; then
+          echo "## Lecture $chunk" >> "$info_file"
+          for video in "${merged_video_files[@]}"; do
+	    echo "- $(basename "$video")" >> "$info_file"
+          done
+          echo "" >> "$info_file"
+        fi
+
+        # Inform the user that merged files will be deleted if selected
+        echo "The following files were merged into lecture $chunk:"
+        for video in "${merged_video_files[@]}"; do
+            echo  $(basename "$video")
+        done
+
+        if [ "$delete_files" = true ]; then
+            echo "The above original files will be deleted since you passed the -d flag:"
+
+            # Remove the original files
+            for video in "${merged_video_files[@]}"; do
+                echo "Removing $(basename "$video")..."
+                rm -f "$video"
+            done
+        fi
+
+        # Clean up and reset variables for the next chunk
+        rm -f "$merge_list"
+        current_duration=0
+        ((chunk++))
+        merged_video_files=()  # Reset the list of merged video files
+    fi
+    echo
+done
+
+# Process any remaining files that didn't add up to the minimum duration
+if [ ${#merged_video_files[@]} -gt 0 ]; then
+    # Set output file name with the same extension as the first file
+    output_extension="${video_files[0]##*.}"
+    output_file="$processed_folder/lecture_$chunk.$output_extension"
+
+    # Merge remaining videos
+    echo "Merging remaining files into $output_file..."
+    ffmpeg -f concat -safe 0 -i "$merge_list" -c copy "$output_file" > /dev/null 2>&1
+
+    # If -i flag is passed, write information about the remaining files to the info file
+    if [ "$create_info" = true ]; then
+      echo "## Lecture $chunk" >> "$info_file"
+      for video in "${merged_video_files[@]}"; do
+	      echo "- $(basename "$video")" >> "$info_file"
+      done
+      echo "" >> "$info_file"
+    fi
+
+    # Inform the user that merged files will be deleted if selected
+    echo "The following files were merged into lecture $chunk:"
+    for video in "${merged_video_files[@]}"; do
+	    echo $(basename "$video")
+    done
+
+    # delete the $merge_list file
+    rm -f "$merge_list"
+
+    if [ "$delete_files" = true ]; then
+        echo "The above original files will be deleted since you passed the -d flag:"
+
+        # Remove the original files
+        for video in "${merged_video_files[@]}"; do
+		echo "Removing $(basename "$video")..."
+            rm -f "$video"
+        done
+    fi
+fi
+
+
+echo "All chunks have been created and stored in the '$processed_folder' folder!"
+if [ "$create_info" = true ]; then
+  echo "Video information has been saved to '$info_file'."
+fi
+
+
+
+# At the very end, after all chunks are processed
+
+# Get the total number of video chunks
+total_chunks=$(ls "$processed_folder"/* | grep -E "\.(mp4|mkv|avi|mov|flv|wmv|webm)$" | wc -l)
+
+# Loop through each file in the processed folder to check their duration
+current_chunk=1
+for chunk_file in "$processed_folder"/*; do
+    # Check if the file is a valid video file
+    if [[ -f "$chunk_file" && "$chunk_file" =~ \.(mp4|mkv|avi|mov|flv|wmv|webm)$ ]]; then
+        # Get the duration of the chunk using ffprobe
+        chunk_duration=$(ffprobe -i "$chunk_file" -show_entries format=duration -v quiet -of csv="p=0" | cut -d. -f1)
+
+        # Convert the chunk duration to minutes
+        chunk_duration_minutes=$(time_to_minutes "$chunk_duration")
+
+        # Check if the chunk duration is less than the specified minimum duration
+        if (( chunk_duration_minutes < min_duration )); then
+            # Print the chunk name in red if it is smaller than the specified duration
+	    echo
+            echo -e "\033[31mChunk: $(basename "$chunk_file") is smaller than the specified duration.\033[0m"
+
+	    # Check if it's the last chunk and echo that it is the last chunk 
+	    if (( current_chunk == total_chunks )); then
+		echo -e "\033[32mBut $(basename "$chunk_file") is the last chunk.\033[0m"
+	    fi
+        fi
+
+
+        ((current_chunk++))
+    fi
+done
+

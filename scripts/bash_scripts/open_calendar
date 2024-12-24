@@ -1,4 +1,0 @@
-#! /usr/bin/bash
-
-google-chrome-stable --new-window --profile-directory="Profile 1" --start-fullscreen https://calendar.google.com/calendar/u/0/r
-

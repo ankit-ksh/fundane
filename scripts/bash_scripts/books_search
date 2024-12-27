@@ -1,24 +1,7 @@
 #!/usr/bin/env bash
 
-# -----------------------------------------------------------------------------
-# Info:
-#   author:    Miroslav Vidovic
-#   file:      books-search.sh
-#   created:   13.08.2017.-08:06:54
-#   revision:  ---
-#   version:   1.0
-# -----------------------------------------------------------------------------
-# Requirements:
-#   rofi
-# Description:
-#   Use rofi to search my books.
-# Usage:
-#   books-search.sh
-# -----------------------------------------------------------------------------
-# Script:
-
 # Books directory
-BOOKS_DIR=~/Desktop/Books
+BOOKS_DIR=~/Documents/Books
 #mkdir -p ~/Books
 
 # Save find result to F_ARRAY

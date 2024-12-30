@@ -1,8 +1,0 @@
-#! /usr/bin/bash
-
-read quality
-if [ -z "$quality"]; then
-	quality=1080;
-fi
-
-echo $quality

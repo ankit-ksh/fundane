@@ -1,0 +1,159 @@
+#!/usr/bin/bash
+
+# Description:
+# This script allows the user to search for and play audio or video from YouTube directly in the terminal.
+# By default, it plays audio, but users can enable video playback or specify quality settings using flags.
+# The script supports custom configuration files for `mpv`, saved separately for audio and video playback.
+# If the required configuration files do not exist, they are created with default content.
+# It also avoids adding duplicate entries to the playback history.
+
+# Usage:
+# Save and make executable: chmod +x play_media.sh
+# Example commands:
+# - Play audio (default): ./play_media.sh
+# - Play video: ./play_media.sh -v
+# - Specify video quality: ./play_media.sh -v -q=720
+# - Replay last searched: ./play_media.sh -l
+# - Replay nth last searched: ./play_media.sh -l=2
+
+
+# Bugs
+# - When resuming a video playback, it doesn't play video+audio, but just plays the audio
+
+# Initialize default options
+play_video=false
+video_quality=360
+history_file="/tmp/ytp_youtube_play_history"
+
+# Ensure history file exists
+touch "$history_file"
+
+# Define config file locations
+audio_config_dir="$HOME/.config/mpv/misc/ytp-mpv-config/audio"
+video_config_dir="$HOME/.config/mpv/misc/ytp-mpv-config/video"
+
+audio_config_file="$audio_config_dir/mpv.conf"
+video_config_file="$video_config_dir/mpv.conf"
+
+# Create the directories and config files if they don't exist
+create_audio_config() {
+    if [ ! -d "$audio_config_dir" ]; then
+        echo "Creating audio config directory: $audio_config_dir"
+        mkdir -p "$audio_config_dir"
+        cat <<EOL > "$audio_config_file"
+save-position-on-quit
+slang=eng,en,hi
+alang=eng,en,hi
+EOL
+        echo "A new mpv config file has been created at $audio_config_file for audio playback."
+    fi
+}
+
+create_video_config() {
+    if [ ! -d "$video_config_dir" ]; then
+        echo "Creating video config directory: $video_config_dir"
+        mkdir -p "$video_config_dir"
+        cat <<EOL > "$video_config_file"
+#pause=yes
+#fullscreen=yes
+save-position-on-quit
+#osc=no
+osd-bar=no
+#stay-on-top=yes
+slang=eng,en,hi
+alang=eng,en,hi
+sub-font-size=35
+sub-font='sans serif'
+sub-back-color='#464646'
+sub-shadow-offset=3
+sub-border-size=0
+#saturation=-100
+
+screenshot-template="%x/S_%F-T(%wH.%wM.%wS)"
+
+[pause_on_focus_lost]
+profile-cond=not focused
+profile-restore=copy-equal
+pause=yes
+EOL
+        echo "A new mpv config file has been created at $video_config_file for video playback."
+    fi
+}
+
+# Parse command-line arguments
+for arg in "$@"; do
+    case $arg in
+        -v|--video)
+            play_video=true
+            ;;
+        -q=*|--quality=*)
+            quality="${arg#*=}"
+            ;;
+        -q|--quality)
+            echo "When playing audio, it chooses the best audio by default. When playing a video, provide the video height like 144,360 etc. If none provided it will default to 360"
+            exit 1
+            ;;
+        -l|--last-played)
+            index=1  # Default to the last played song
+            ;;
+        -l=*|--last-played=*)
+            index="${arg#*=}"  # Extract index from the argument
+            ;;
+        [0-9]*)  # Handle shorthand `-l <number>`
+            if [[ $index == 1 ]]; then
+                index="$arg"
+            fi
+            ;;
+        -h|--help)
+            echo "Usage: $0 [--video|-v] [--quality=<quality>|-q=<quality>] [--last-played[=<n>]|-l [<n>]] [-h|--help]"
+            echo "  --video, -v          Play video instead of audio."
+            echo "  --quality=<quality>, -q=<quality>"
+            echo "                       Specify video playback quality (e.g 360, 1080 etc), if not provided will play with 360. Audio by default is set to best quality."
+            echo "  --last-played[=<n>], -l [<n>]"
+            echo "                       Replay the last (<n>=1) or nth last searched item."
+            echo "  --help, -h           Show this help message."
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $arg"
+            echo "Use --help or -h for usage instructions."
+            exit 1
+            ;;
+    esac
+done
+
+# Determine playback based on history or prompt user for a new song
+if [[ -n "$index" ]]; then
+    # Extract the nth last played song from the history
+    song_name=$(tail -n "$index" "$history_file" | head -n 1)
+    if [[ -z "$song_name" ]]; then
+        echo "No history found for the requested position ($index)."
+        exit 1
+    fi
+    echo "Playing item from history ($index): $song_name"
+else
+    # Prompt the user to enter a song or video name
+    read -p "Enter the song or video name: " song_name
+    # Avoid adding duplicates to history
+    last_played=$(tail -n 1 "$history_file")
+    if [[ "$song_name" != "$last_played" ]]; then
+        echo "$song_name" >> "$history_file"
+    fi
+fi
+
+# Ensure the correct config files are created
+create_audio_config
+create_video_config
+
+# Determine playback mode and quality
+if $play_video; then
+    video_quality=$quality
+    echo "Playing video with quality: $video_quality"
+    # Use video-specific config file for video playback
+    mpv --config-dir="$video_config_dir" --ytdl-format="bestvideo[height<=$video_quality]+bestaudio" ytdl://ytsearch:"$song_name"
+else
+    echo "Playing audio..."
+    # Use audio-specific config file for audio playback
+    mpv --config-dir="$audio_config_dir" --ytdl-format=bestaudio --slang=en ytdl://ytsearch:"$song_name"
+fi
+

@@ -2,73 +2,127 @@
 
 # -----------------------------------------------------------------------------
 # Info:
-#   author:    Miroslav Vidovic
-#   file:      files-search.sh
-#   created:   13.08.2017.-08:06:54
-#   revision:  ---
-#   version:   1.0
+#   file:      file-search.sh
+#   version:   1.1
 # -----------------------------------------------------------------------------
 # Requirements:
 #   rofi
 # Description:
-#   Use rofi to search my files.
+#   This script allows you to search for specific types of files (e.g., music,
+#   images, documents, videos) within a specified directory (relative to the
+#   home directory). The user can select a file from the search results using
+#   rofi, and the selected file will be opened using the default application.
 # Usage:
-#   files-search.sh
+#   ./file-search.sh [-d directory]
+#   -d directory   Specify the directory to search for files (relative to home directory)
 # -----------------------------------------------------------------------------
-# Script:
 
-# Files directory
-FILES_DIR=~/$1
-#mkdir -p ~/Files
+# Default directory to search in if no directory is specified
+DEFAULT_DIR=~
 
-# Save find result to F_ARRAY
-# readarray -t F_ARRAY <<< "$(find "$FILES_DIR" -type f -name '*.pdf')"
-readarray -t F_ARRAY <<< "$(ls $FILES_DIR)"
-
-# Associative array for storing files
-# key => file name
-# value => absolute path to the file
-# FILES['filename']='path'
-declare -A FILES
-
-# Add elements to FILES array
-get_files() {
-
-  # if [ ${#F_ARRAY[@]} != 0 ]; then
-  if [[ ! -z ${F_ARRAY[@]} ]]; then
-    for i in "${!F_ARRAY[@]}"
-    do
-      path=${F_ARRAY[$i]}
-      file=$(basename "${F_ARRAY[$i]}")
-      FILES+=(["$file"]="$path")
-    done
-  else
-      echo "$FILES_DIR is empty!"
-      # echo "Please put some files in it."
-      # echo "Only .pdf files are accepted."
-      exit
-  fi
-
-  
+# Function to display usage information
+usage() {
+    echo "Usage: $0 [-d directory]"
+    echo "  -d directory   Specify the directory to search for files (relative to home directory)"
+    echo "If no directory is provided, the script will search in the home directory."
+    exit 1
 }
 
-# List for rofi
-gen_list(){
+# Declare an associative array for file extensions by category
+declare -A EXTENSIONS
+
+# Adding extensions to categories
+EXTENSIONS["music"]="mp3 flac wav ogg aac m4a"
+EXTENSIONS["images"]="jpg jpeg png gif bmp tiff webp"
+EXTENSIONS["documents"]="pdf docx txt epub odt rtf md csv"
+EXTENSIONS["videos"]="mp4 mkv avi mov webm flv mpeg"
+
+# Parse command-line arguments
+while getopts "d:" opt; do
+  case $opt in
+    d)
+      # Update directory to the relative path specified by user (relative to home directory)
+      DIR="$HOME/$OPTARG"
+      ;;
+    *)
+      # Display usage if an invalid option is provided
+      usage
+      ;;
+  esac
+done
+
+# Use default directory if none is provided
+DIR="${DIR:-$DEFAULT_DIR}"
+
+# Function to find files based on extensions for a specific category (e.g., music, images)
+get_files_by_category() {
+    local category=$1
+    local extensions="${EXTENSIONS[$category]}"
+
+    # Check if extensions are defined for the category
+    if [ -z "$extensions" ]; then
+        echo "No extensions defined for category: $category"
+        return
+    fi
+
+    # Search for files with each extension for the given category
+    for ext in $extensions; do
+        # Use 'find' command to search for files with the given extension
+        readarray -t F_ARRAY <<< "$(find "$DIR" -type f -iname "*.$ext")"
+        
+        # If files are found, add them to the FILES associative array
+        if [[ ! -z ${F_ARRAY[@]} ]]; then
+            for i in "${!F_ARRAY[@]}"; do
+                path=${F_ARRAY[$i]}
+                file=$(basename "$path")
+                FILES["$file"]="$path"
+            done
+        fi
+    done
+}
+
+# Associative array to store found files
+declare -A FILES
+
+# Main function to collect files from all categories
+get_files() {
+    # Categories to search (music, images, documents, videos)
+    local categories=("music" "images" "documents" "videos")
+    
+    for category in "${categories[@]}"; do
+        get_files_by_category "$category"
+    done
+}
+
+# Generate the list of files for rofi
+gen_list() {
   for i in "${!FILES[@]}"
   do
+    # Output the file names for selection in rofi
     echo "$i"
   done
 }
 
+# Main function
 main() {
+  # Get all files from different categories (music, images, documents, videos)
   get_files
-  file=$( (gen_list) | rofi -dmenu -i -matching regex -no-custom -location 0 -p "File > " )
+  
+  # Use rofi to display the file list and allow the user to select a file
+  file=$( (gen_list) | rofi -dmenu -i -matching regex -no-custom -location 0 -p "Select a file > " )
 
+  # If a file is selected, open it using the default application
   if [ -n "$file" ]; then
     xdg-open "${FILES[$file]}"
   fi
 }
 
-main
+# If no arguments are passed, show usage information
+if [ $# -eq 0 ]; then
+    usage
+else
+    main
+fi
 
 exit 0
+

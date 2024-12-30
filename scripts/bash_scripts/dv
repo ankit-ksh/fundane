@@ -1,7 +1,0 @@
-#! /usr/bin/bash
-
-#downloading video with yt-dlp : input quality
-	yt-dlp -f ba+bv[height="$1"] --progress --embed-subs --embed-chapters --merge-output-format mkv --output "%(title)s.%(ext)s" --windows-filenames ytsearch:"$2"
-
-#removed options
-#--sponsorblock-remove default

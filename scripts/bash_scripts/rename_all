@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Description:
+# This script loops through all files and directories in the current folder 
+# and allows the user to rename them interactively.
+# The user is prompted to enter a new name for each file or directory.
+# If the input is left blank, the renaming is skipped for that item.
+
+# Usage:
+# 1. Save this script to a file, e.g., rename_interactive.sh.
+# 2. Make the script executable: chmod +x rename_interactive.sh
+# 3. Run the script in the desired directory: ./rename_interactive.sh
+
+# Loop through all files and directories in the current folder
+for i in *; do
+    # Skip the script file itself (if it is in the same directory)
+    [[ "$i" == "${0##*/}" ]] && continue
+
+    # Display the current file or directory name
+    echo "Current item: $i"
+    # Prompt the user to enter a new name
+    echo "Rename it to (leave empty to skip): "
+    read -r new_name  # Read user input and store it in the variable new_name
+
+    # Check if the user provided a new name
+    if [ -n "$new_name" ]; then
+        # Check if a file or directory with the new name already exists
+        if [ -e "$new_name" ]; then
+            # If it exists, display an error message and skip renaming
+            echo "Error: $new_name already exists. Skipping..."
+        else
+            # If it does not exist, rename the current item
+            mv -- "$i" "$new_name"
+            echo "Renamed $i to $new_name"
+        fi
+    else
+        # If no new name was provided, skip renaming
+        echo "Skipped renaming $i"
+    fi
+done
+

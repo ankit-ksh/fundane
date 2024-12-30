@@ -1,0 +1,134 @@
+[plugins/color]
+night-light-enabled=true
+night-light-schedule-automatic=false
+night-light-schedule-from=17.0
+night-light-schedule-to=6.0
+night-light-temperature=uint32 3700
+
+[plugins/media-keys]
+calculator=['<Super>c']
+custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom2/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom4/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom5/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom6/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom3/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom7/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom8/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom9/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom10/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom11/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom12/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom13/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom14/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom15/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom16/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom17/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom18/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom19/']
+decrease-text-size=['<Super>KP_Subtract']
+email=@as []
+home=['<Super>e']
+increase-text-size=['<Super>KP_Add']
+logout=['<Primary><Alt>Delete', '<Shift><Super>e']
+screensaver=['<Super>l']
+search=@as []
+terminal=['<Primary><Alt>t', '<Super>Return']
+www=@as []
+
+[plugins/media-keys/custom-keybindings/PopLaunch1]
+binding='Launch1'
+command='gnome-control-center wifi'
+name='WiFi'
+
+[plugins/media-keys/custom-keybindings/custom0]
+binding='Print'
+command='/usr/bin/flameshot gui'
+name='flameshot part of the screen screenshot'
+
+[plugins/media-keys/custom-keybindings/custom1]
+binding='<Shift><Super>b'
+command='google-chrome-stable --new-window --profile-directory="Profile 7" '
+name='Open IITM Browser profile'
+
+[plugins/media-keys/custom-keybindings/custom10]
+binding='<Super>KP_Enter'
+command='gnome-terminal -- ipython3'
+name='ipython'
+
+[plugins/media-keys/custom-keybindings/custom11]
+binding='<Alt><Super>c'
+command='gnome-calculator'
+name='calculater'
+
+[plugins/media-keys/custom-keybindings/custom12]
+binding=''
+command='cosmic-files'
+name='cosmic files'
+
+[plugins/media-keys/custom-keybindings/custom13]
+binding='<Super>comma'
+command='systemctl suspend'
+name='suspend'
+
+[plugins/media-keys/custom-keybindings/custom14]
+binding='<Super>semicolon'
+command='/home/ankit/.config/i3/scripts/lock_with_i3lock'
+name='lock with screenshot'
+
+[plugins/media-keys/custom-keybindings/custom15]
+binding='<Super>k'
+command='bash /home/ankit/Desktop/Practice/git-repos/fundane/scripts/bash_scripts/books_search'
+name='search books with rofi'
+
+[plugins/media-keys/custom-keybindings/custom16]
+binding='<Shift><Super>w'
+command='xrandr -o left'
+name='change display orientation to portrait left'
+
+[plugins/media-keys/custom-keybindings/custom17]
+binding='<Shift><Super>p'
+command='/usr/bin/flatpak run org.gnome.Solanum'
+name='Solanum - Pomodoro method'
+
+[plugins/media-keys/custom-keybindings/custom18]
+binding='<Shift><Super>y'
+command='freetube'
+name='Open freetube'
+
+[plugins/media-keys/custom-keybindings/custom19]
+binding='<Shift><Super>l'
+command='gnome-terminal -- bash -c "/home/ankit/Desktop/Practice/git-repos/fundane/personal_scripts_novcs/time_log"'
+name='to log the time'
+
+[plugins/media-keys/custom-keybindings/custom2]
+binding='<Super>b'
+command='google-chrome-stable --new-window --profile-directory="Default" '
+name='Open personal profile browser'
+
+[plugins/media-keys/custom-keybindings/custom3]
+binding='<Shift><Super>n'
+command='xrandr -o normal'
+name='change display orientation to normal'
+
+[plugins/media-keys/custom-keybindings/custom4]
+binding='<Shift><Super>greater'
+command='reboot'
+name='reboot'
+
+[plugins/media-keys/custom-keybindings/custom5]
+binding='<Super>period'
+command='shutdown now'
+name='shutdown'
+
+[plugins/media-keys/custom-keybindings/custom6]
+binding='<Primary><Alt>m'
+command='/home/ankit/Desktop/Nest/git-repos/fundane/scripts/yta'
+name='play music from youtube'
+
+[plugins/media-keys/custom-keybindings/custom7]
+binding='<Shift><Super>r'
+command='xrandr -o right'
+name='change display orientation to right'
+
+[plugins/media-keys/custom-keybindings/custom8]
+binding='<Super>d'
+command='rofi -modi drun,run -show drun'
+name='open dmenu with rofi'
+
+[plugins/media-keys/custom-keybindings/custom9]
+binding='<Shift><Alt>l'
+command='xrandr -o left'
+name='change display orientation to left and portrait'
+
+[plugins/power]
+idle-dim=true
+sleep-inactive-ac-timeout=1800
+sleep-inactive-ac-type='suspend'
+sleep-inactive-battery-timeout=1800
+sleep-inactive-battery-type='suspend'
+
+[plugins/sharing/rygel]
+enabled-connections=['5c6f9def-1d9e-47c0-a42d-60198c1b5766']

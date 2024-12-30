@@ -93,20 +93,18 @@ cd "$course_dir" || exit
 # Playlist handling and user input for start/end video
 if [ "$playlist" = true ]; then
     echo "Playlist download mode enabled."
-    echo "Starting from video number: "
-    read start
-    echo "Ending at video number: "
-    read end
+    echo "Starting from video number: 1"
+    echo "Ending at video number: 100"
 
     # Validate start/end
-    start=${start:-1}
-    end=${end:-100}
+    start=1
+    end=100
 
     # Start download and show progress
     yt-dlp -f "ba+bv[height<=$quality]" --yes-playlist --progress --embed-subs --write-auto-sub \
            --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/%(playlist_index)s. %(title)s.%(ext)s" \
            --sponsorblock-remove default --playlist-start "$start" --playlist-end "$end" "$url" | \
-           grep -E "([0-9]+%\s*|^Destination|^Downloading)"
+           grep -E "^\[download\]"
     
 # Specific video numbers
 elif [ -n "$numbers" ]; then
@@ -117,7 +115,7 @@ elif [ -n "$numbers" ]; then
         yt-dlp -f "ba+bv[height<=$quality]" --no-playlist --progress --embed-subs --write-auto-sub \
                --embed-chapters --merge-output-format mkv --output "%(playlist_title)s/$num. %(title)s.%(ext)s" \
                --sponsorblock-remove default --playlist-start "$num" --playlist-end "$num" "$url" | \
-               grep -E "([0-9]+%\s*|^Destination|^Downloading)"
+               grep -E "^\[download\]"
     done
 
 else
@@ -125,7 +123,7 @@ else
     yt-dlp -f "ba+bv[height<=$quality]" --no-playlist --progress --embed-subs --write-auto-sub \
            --embed-chapters --merge-output-format mkv --output "%(title)s.%(ext)s" \
            --sponsorblock-remove default "$url" | \
-           grep -E "([0-9]+%\s*|^Destination|^Downloading)"
+           grep -E "^\[download\]"
 fi
 
 # Return to original directory

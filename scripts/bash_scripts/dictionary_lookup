@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+# -----------------------------------------------------------------------------
+# Info:
+#   author:    Adapted by ChatGPT
+#   file:      dictionary-lookup.sh
+#   created:   $(date)
+#   version:   1.1
+# -----------------------------------------------------------------------------
+# Requirements:
+#   rofi, curl, jq
+# Description:
+#   Use rofi to input a word and fetch its meaning from an online dictionary.
+# Usage:
+#   ./dictionary-lookup.sh
+# -----------------------------------------------------------------------------
+
+# API Endpoint for dictionary lookup
+DICTIONARY_API="https://api.dictionaryapi.dev/api/v2/entries/en/"
+
+# Fetch word meaning from API
+fetch_meaning() {
+  local word=$1
+  response=$(curl -s "$DICTIONARY_API$word")
+  
+  # Parse and display meanings or error message
+  if echo "$response" | grep -q 'No Definitions Found'; then
+    echo "No definitions found for '$word'."
+  else
+    # Extract first definition and part of speech
+    definition=$(echo "$response" | jq -r '.[0].meanings[0].definitions[0].definition' 2>/dev/null)
+    part_of_speech=$(echo "$response" | jq -r '.[0].meanings[0].partOfSpeech' 2>/dev/null)
+    
+    # Handle cases with missing data
+    if [[ -z "$definition" ]]; then
+      echo "Error fetching meaning for '$word'."
+    else
+      echo "[$part_of_speech] $definition"
+    fi
+  fi
+}
+
+main() {
+  # Prompt user for a word using rofi
+  word=$(rofi -dmenu -i -p "Enter a word: " -location 0)
+
+  if [ -n "$word" ]; then
+    meaning=$(fetch_meaning "$word")
+    rofi -e "Definition: $meaning"
+  else
+    rofi -e "No input provided."
+  fi
+}
+
+main
+exit 0

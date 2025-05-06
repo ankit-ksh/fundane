@@ -86,6 +86,9 @@ for arg in "$@"; do
         -v|--video)
             play_video=true
             ;;
+        -h|--show-history)
+	    show_history=true
+	    ;;
         -q=*|--quality=*)
             quality="${arg#*=}"
             ;;
@@ -122,6 +125,13 @@ for arg in "$@"; do
     esac
 done
 
+# if the -h or --show-history flag is enables, just echo the history file and exit
+if [[ "$show_history" == true ]]; then
+	cat -n $history_file;
+	exit;
+fi
+
+
 # Determine playback based on history or prompt user for a new song
 if [[ -n "$index" ]]; then
     # Extract the nth last played song from the history
@@ -148,6 +158,7 @@ create_video_config
 # Determine playback mode and quality
 if $play_video; then
     video_quality=$quality
+    echo video quality is $video_quality
     echo "Playing video with quality: $video_quality"
     # Use video-specific config file for video playback
     mpv --config-dir="$video_config_dir" --ytdl-format="bestvideo[height<=$video_quality]+bestaudio" ytdl://ytsearch:"$song_name"

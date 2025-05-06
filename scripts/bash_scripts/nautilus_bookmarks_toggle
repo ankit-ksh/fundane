@@ -1,0 +1,28 @@
+#!/bin/bash
+
+BOOKMARKS_FILE="$HOME/.config/gtk-3.0/bookmarks"
+BACKUP_FILE="$HOME/.config/gtk-3.0/bookmarks.backup"
+
+# Check if the backup file exists
+if [ -f "$BACKUP_FILE" ]; then
+    # If backup exists, restore the backup by renaming it to bookmarks
+    mv "$BACKUP_FILE" "$BOOKMARKS_FILE"
+    echo "Restored the bookmarks file from backup."
+    # Remove the backup after restoring
+    if [ -f "$BACKUP_FILE" ]; then
+        rm "$BACKUP_FILE"
+        echo "Removed the backup file."
+    fi
+else
+    # If backup doesn't exist, create a backup and remove the original bookmarks file
+    if [ -f "$BOOKMARKS_FILE" ]; then
+        mv "$BOOKMARKS_FILE" "$BACKUP_FILE"
+        echo "Backed up the bookmarks file."
+        # Remove the original bookmarks file after backup
+        rm "$BOOKMARKS_FILE"
+        echo "Removed the original bookmarks file."
+    else
+        echo "No bookmarks file found to backup."
+    fi
+fi
+

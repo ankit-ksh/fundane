@@ -3,7 +3,9 @@
 
 #initializing some variables
 #Download directory
-dwnld_dir = "$HOME/Music"
+import os
+home_dir = os.getenv("HOME")
+dwnld_dir = f"{home_dir}/Music"
 
 
 
